@@ -17,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.google.recaptchaenterprise.v1.Assessment;
+import java.util.Base64;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.junit.jupiter.api.Test;
@@ -52,7 +54,13 @@ class PldApplicationTests {
         .perform(
             post("/createAssessment")
                 .contentType("application/json")
-                .content(" { \"username\":\"usernameABC\", \"password\":\"password123\" } "))
+                .content(
+                    """
+                    {
+                      "username": "usernameABC",
+                      "password": "password123"
+                    }
+                    """))
         .andExpect(status().isOk());
   }
 
@@ -66,14 +74,24 @@ class PldApplicationTests {
         .perform(
             post("/createAssessment")
                 .contentType("application/json")
-                .content(" { \"username\":\"usernameABC\"} "))
+                .content(
+                    """
+                    {
+                      "username": "usernameABC"
+                    }
+                    """))
         .andExpect(status().isBadRequest());
 
     mockMvc
         .perform(
             post("/createAssessment")
                 .contentType("application/json")
-                .content("{ \"password\":\"password123\" }"))
+                .content(
+                    """
+                    {
+                      "password": "password123"
+                    }
+                    """))
         .andExpect(status().isBadRequest());
   }
 
@@ -81,5 +99,28 @@ class PldApplicationTests {
   public void testThreadPoolCount() {
     final ThreadPoolExecutor threadPool = (ThreadPoolExecutor) passwordCheckExecutorService;
     assertEquals(5, threadPool.getCorePoolSize());
+  }
+
+  @Test
+  void validAmendAssessmentSucceeds() throws Exception {
+    Assessment assessment = Assessment.newBuilder().build();
+    mockMvc
+        .perform(
+            post("/amendAssessment")
+                .accept("application/json")
+                .contentType("application/json")
+                .content(
+                    String.format(
+                        """
+                        {
+                          "credentials": {
+                            "username": "usernameABC",
+                            "password": "password123"
+                          },
+                          "assessment": "%s"
+                        }
+                        """,
+                        Base64.getEncoder().encodeToString(assessment.toByteArray()))))
+        .andExpect(status().isOk());
   }
 }
