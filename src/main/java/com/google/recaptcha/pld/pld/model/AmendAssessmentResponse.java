@@ -13,10 +13,28 @@
 // limitations under the License.
 package com.google.recaptcha.pld.pld.model;
 
-import lombok.Data;
-
-@Data
 public class AmendAssessmentResponse {
-  private final String assessment;
-  private final PldLeakedStatus pldLeakedStatus;
+  private String assessment;
+  private PldLeakedStatus pldLeakedStatus;
+
+  public AmendAssessmentResponse(String assessment, PldLeakedStatus pldLeakedStatus) {
+    this.assessment = assessment;
+    this.pldLeakedStatus = pldLeakedStatus;
+  }
+
+  public String getAssessment() {
+    return assessment;
+  }
+
+  public void setAssessment(String assessment) {
+    this.assessment = assessment;
+  }
+
+  public PldLeakedStatus getPldLeakedStatus() {
+    return pldLeakedStatus;
+  }
+
+  public void setPldLeakedStatus(PldLeakedStatus pldLeakedStatus) {
+    this.pldLeakedStatus = pldLeakedStatus;
+  }
 }

@@ -14,12 +14,31 @@
 package com.google.recaptcha.pld.pld.model;
 
 import jakarta.validation.Valid;
-import lombok.Data;
 import org.springframework.validation.annotation.Validated;
 
-@Data
 @Validated
 public class AmendAssessmentRequest {
-  @Valid private final PlaintextCredentials credentials;
-  private final String assessment;
+  @Valid private PlaintextCredentials credentials;
+  private String assessment;
+
+  public AmendAssessmentRequest(@Valid PlaintextCredentials credentials, String assessment) {
+    this.credentials = credentials;
+    this.assessment = assessment;
+  }
+
+  public PlaintextCredentials getCredentials() {
+    return credentials;
+  }
+
+  public void setCredentials(PlaintextCredentials credentials) {
+    this.credentials = credentials;
+  }
+
+  public String getAssessment() {
+    return assessment;
+  }
+
+  public void setAssessment(String assessment) {
+    this.assessment = assessment;
+  }
 }
