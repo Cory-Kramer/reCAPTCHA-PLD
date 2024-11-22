@@ -13,6 +13,8 @@
 // limitations under the License.
 package com.google.recaptcha.pld.pld.controllers;
 
+import static com.google.recaptcha.pld.pld.util.JsonConverter.toJsonString;
+
 import com.google.cloud.recaptcha.passwordcheck.PasswordCheckVerification;
 import com.google.recaptcha.pld.pld.model.AmendAssessmentRequest;
 import com.google.recaptcha.pld.pld.model.AmendAssessmentResponse;
@@ -23,7 +25,6 @@ import com.google.recaptcha.pld.pld.model.VerificationResponse;
 import com.google.recaptcha.pld.pld.services.PldService;
 import com.google.recaptcha.pld.pld.services.RecaptchaContext;
 import jakarta.validation.Valid;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -95,7 +96,7 @@ public class PldController {
         .thenApply(
             pldResult ->
                 new AmendAssessmentResponse(
-                    Base64.getEncoder().encodeToString(response.getAssessment().toByteArray()),
+                    toJsonString(response.getAssessment()),
                     pldResult.areCredentialsLeaked()
                         ? PldLeakedStatus.LEAKED
                         : PldLeakedStatus.NO_STATUS));

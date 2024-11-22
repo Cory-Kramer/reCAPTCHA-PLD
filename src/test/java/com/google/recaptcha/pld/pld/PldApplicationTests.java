@@ -13,12 +13,13 @@
 // limitations under the License.
 package com.google.recaptcha.pld.pld;
 
+import static com.google.recaptcha.pld.pld.util.JsonConverter.toJsonString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.google.recaptchaenterprise.v1.Assessment;
-import java.util.Base64;
+import com.google.recaptchaenterprise.v1.Event;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.junit.jupiter.api.Test;
@@ -103,7 +104,11 @@ class PldApplicationTests {
 
   @Test
   void validAmendAssessmentSucceeds() throws Exception {
-    Assessment assessment = Assessment.newBuilder().build();
+    Assessment assessment =
+        Assessment.newBuilder()
+            .setEvent(Event.newBuilder().setToken("fake-token").setSiteKey("fake-site-key").build())
+            .build();
+
     mockMvc
         .perform(
             post("/amendAssessment")
@@ -120,7 +125,7 @@ class PldApplicationTests {
                           "assessment": "%s"
                         }
                         """,
-                        Base64.getEncoder().encodeToString(assessment.toByteArray()))))
+                        toJsonString(assessment))))
         .andExpect(status().isOk());
   }
 }

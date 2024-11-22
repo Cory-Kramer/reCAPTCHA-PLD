@@ -13,6 +13,9 @@
 // limitations under the License.
 package com.google.recaptcha.pld.pld.services;
 
+import static com.google.recaptcha.pld.pld.util.JsonConverter.fromJsonString;
+import static com.google.recaptcha.pld.pld.util.JsonConverter.toJsonString;
+
 import com.google.api.gax.core.NoCredentialsProvider;
 import com.google.api.gax.rpc.ApiException;
 import com.google.api.gax.rpc.FixedHeaderProvider;
@@ -20,7 +23,6 @@ import com.google.cloud.recaptcha.passwordcheck.PasswordCheckVerification;
 import com.google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseServiceClient;
 import com.google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseServiceSettings;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.recaptcha.pld.pld.model.Messages;
 import com.google.recaptcha.pld.pld.model.RecaptchaAuthMethod;
 import com.google.recaptcha.pld.pld.model.RecaptchaConfig;
@@ -31,7 +33,6 @@ import com.google.recaptchaenterprise.v1.PrivatePasswordLeakVerification;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -144,8 +145,7 @@ public class RecaptchaContext {
 
           try {
             Assessment amendedRequest =
-                Assessment.parseFrom(Base64.getDecoder().decode(requestAssessment.getBytes()))
-                    .toBuilder()
+                fromJsonString(requestAssessment).toBuilder()
                     .setPrivatePasswordLeakVerification(pldVerification)
                     .build();
 
@@ -156,8 +156,6 @@ public class RecaptchaContext {
             return new VerificationResponse(responseAssessment, clientEncryptedCredentials);
           } catch (ApiException apiException) {
             throw apiException;
-          } catch (InvalidProtocolBufferException | IllegalArgumentException e) {
-            throw new IllegalArgumentException(Messages.INVALID_ASSESSMENT_BYTE_STREAM);
           } catch (Exception e) {
             throw e;
           }
@@ -167,9 +165,7 @@ public class RecaptchaContext {
   public CompletableFuture<Assessment> createAssessmentAsync(
       PasswordCheckVerification clientEncryptedCredentials) {
     Assessment requestAssessment = Assessment.newBuilder().build();
-    return this.createAssessmentAsync(
-            clientEncryptedCredentials,
-            Base64.getEncoder().encodeToString(requestAssessment.toByteArray()))
+    return this.createAssessmentAsync(clientEncryptedCredentials, toJsonString(requestAssessment))
         .thenApply(response -> response.getAssessment());
   }
 }

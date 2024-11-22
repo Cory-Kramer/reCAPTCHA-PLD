@@ -100,7 +100,7 @@ public class RecaptchaContextTests {
   }
 
   @Test
-  void shouldRejectInvalidAssessmentBytestream() throws IllegalArgumentException, IOException {
+  void shouldRejectInvalidAssessmentJsonString() throws IllegalArgumentException, IOException {
     when(env.defaultCredentialsAreSet()).thenReturn(false);
     when(env.getApiKey()).thenReturn("test-api-key-mock");
     recaptchaContext.initializeInternal();
@@ -115,10 +115,10 @@ public class RecaptchaContextTests {
                     .thenCompose(
                         verification ->
                             recaptchaContext.createAssessmentAsync(
-                                verification, "invalid-assessment-bytestream"))
+                                verification, "invalid-assessment-json"))
                     .join());
 
     assertInstanceOf(IllegalArgumentException.class, ex.getCause());
-    assertTrue(ex.getMessage().contains(Messages.INVALID_ASSESSMENT_BYTE_STREAM));
+    assertTrue(ex.getMessage().contains(Messages.JSON_TO_ASSESSMENT_ERROR));
   }
 }
