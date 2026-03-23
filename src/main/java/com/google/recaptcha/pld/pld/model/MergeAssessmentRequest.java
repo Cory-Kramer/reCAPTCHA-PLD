@@ -13,7 +13,7 @@
 // limitations under the License.
 package com.google.recaptcha.pld.pld.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 import com.google.recaptcha.pld.pld.util.AssessmentJsonComponent.Deserializer;
 import com.google.recaptchaenterprise.v1.Assessment;
 import jakarta.validation.Valid;
